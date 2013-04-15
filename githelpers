@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Log output:
+#
+# * 51c333e    (2012-07-12)    <Evan Owen>   make important changes
+#
+# The log format uses } characters between each field, and `column` is later
+# used to split on them. A } in the commit subject or any other field will
+# break this.
+
+HASH="%C(yellow)%h%Creset"
+ABSOLUTE_TIME="%C(green)%ad%Creset"
+AUTHOR="%C(bold blue)%an%Creset"
+REFS="%C(red)%d%Creset"
+SUBJECT="%s"
+
+FORMAT="$HASH}$ABSOLUTE_TIME}$AUTHOR}$SUBJECT"
+
+show_git_head() {
+  echo "$(pretty_git_log -1) $(git show --color -p --pretty="tformat:")" |
+    less -FXRS
+}
+
+pretty_git_log() {
+  git log --pretty="tformat:${FORMAT}" --date=short $* |
+    # Line columns up based on } delimiter
+    column -s '}' -t |
+    # Page only if we need to
+    less -FXRS
+}
+
+prune_merged() {
+  test -n "$1" && prune_merged_remotes $@ || prune_merged_local
+}
+
+prune_merged_local() {
+  git branch --list --merged |
+    grep --invert-match -E '\*|master' |
+    xargs -n 1 git branch --delete
+}
+
+prune_merged_remotes() {
+  git fetch origin
+  git remote prune origin
+  git branch --list --remote --merged $1 |
+    grep --invert-match -E "HEAD|master|$1" |
+    sed 's/ *origin\///' |
+    xargs -p -I branch git push origin :branch
+}

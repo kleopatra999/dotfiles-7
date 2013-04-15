@@ -1,0 +1,38 @@
+[user]
+	name = Isaac Hall
+	email = isaac@recurly.com
+[github]
+	user = isaachall
+[core]
+	excludesfile = ~/.gitignore
+[color]
+	ui = auto
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+[alias]
+	br = branch
+	ci = commit -s -v
+	co = checkout
+	di = diff
+	st = status
+	l  = "!source ~/.githelpers && pretty_git_log"
+	h  = "!source ~/.githelpers && show_git_head"
+	fixup = !sh -c 'git commit -m \"fixup! $(git log -1 --format='\\''%s'\\'' $@)\"' -
+	squash = !sh -c 'git commit -m \"squash! $(git log -1 --format='\\''%s'\\'' $@)\"' -
+	recommit = commit --amend -CHEAD
+	prune-merged = "!source ~/.githelpers && prune_merged"
+[push]
+	default = current
+[branch]
+	autosetuprebase = always
+[merge]
+	conflictstyle = diff3
+[rebase]
+	autosquash = true
+[credential]
+	helper = osxkeychain
+[rerere]
+	enabled = true
+	autoupdate = true
